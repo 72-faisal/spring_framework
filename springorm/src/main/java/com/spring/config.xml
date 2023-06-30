@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<tx:annotation-driven/>
+
+
+	<context:annotation-config />
+
+
+
+	<bean class="com.spring.UserDao" name="dao">
+
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+
+
+	</bean>
+
+	<bean
+		class=" org.springframework.orm.hibernate5.HibernateTemplate"
+		name="hibernateTemplate">
+		<property name="sessionFactory" ref="factory" />
+
+	</bean>
+
+	<!-- for ref of session-factory we have to search for local-session-factory-bean. -->
+	<bean
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"
+		name="factory">
+		<!-- for localsessionfactorybean we dont have to add all object but some 
+			of the object from localsessionfactorybean.class -->
+		<!-- for that we have to add 3 object -->
+		<!-- 1.datasource. 2.hibernateproperties 3.annotatedclasses -->
+
+		<property name="dataSource" ref="ds" />
+		<property name="hibernateProperties">
+			<props>
+
+				<!-- the first properties is the dialect which means what database we 
+					are using if use oracle then use oracle in place of mysql5dialect -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect </prop>
+				<!-- the second properties is for hbm2ddl measn hibernate to datadefinitionlanguage 
+					which we have to set as update -->
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<!-- the thirs propertis is show_sql which is used to show the sql query 
+					in console. -->
+				<prop key="hibernate.show_sql">true</prop>
+
+			</props>
+			<!-- the third properties is for annotatedclass which means in which class 
+				we use annotation -->
+
+		</property>
+		<property name="annotatedClasses">
+			<list>
+
+				<value>com.spring.User</value>
+
+			</list>
+		</property>
+	</bean>
+
+
+
+
+
+	<!-- forr accessing the datasource class we have to use the drivermanagerdatasourceTd -->
+	<bean
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		name="ds">
+		<!-- the first option we have to add is driverclassname which is used for 
+			driver clas which database we have used in our code. -->
+		<property name="driverClassName"
+			value="com.mysql.cj.jdbc.Driver" />
+
+		<!-- second thing we hace to add is url which localhost and what is url 
+			for our code and in which database we have to add data -->
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/springorm" />
+
+		<!-- third is for username what is the username for our database -->
+		<property name="username" value="root" />
+
+		<!-- the last is password what is the password for our database access.😅😊 -->
+		<property name="password" value="" />
+
+
+	</bean>
+
+
+	<!-- the last thing is hibernatetransactionmanager. which is the refrence 
+		form localsessionfactory or we can see this in hibernatetemplate also. -->
+	<bean
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+		name="transactionManager">
+		<property name="sessionFactory" ref="factory" />
+	</bean>
+
+
+</beans>
